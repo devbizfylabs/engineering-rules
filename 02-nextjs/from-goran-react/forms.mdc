@@ -1,0 +1,56 @@
+---
+description: "Form patterns - React Hook Form, controlled vs uncontrolled, validation integration"
+---
+
+# Form Patterns
+
+## Setup (React Hook Form + Zod)
+
+- `useForm<T>({ resolver: zodResolver(schema), defaultValues })` — infer `T` with `z.infer<typeof schema>`
+- Inline errors: `formState.errors.field?.message`; set `aria-invalid={!!errors.field}` on input
+- Disable submit: `disabled={isSubmitting}` or `disabled={!isDirty || isSubmitting}`
+
+```typescript
+// Skeletal: RHF + Zod
+const schema = z.object({ email: z.string().email(), password: z.string().min(8) });
+type FormData = z.infer<typeof schema>;
+const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
+  resolver: zodResolver(schema),
+  defaultValues: { email: '', password: '' },
+});
+// onSubmit: async (data) => { await api.submit(data); }
+// JSX: <form onSubmit={handleSubmit(onSubmit)}> ... <input {...register('email')} aria-invalid={!!errors.email} /> ...
+```
+
+## Key Hooks
+
+- **useFieldArray:** Dynamic lists — `name: 'contacts'`, `append`, `remove`; register `contacts.${index}.field`
+- **useFormContext:** Nested forms / shared context — wrap with `FormProvider`, consume with `useFormContext`
+- **useWatch:** Subscribe to specific fields for conditional UI or side effects
+- **setValue / reset:** Programmatic values (e.g. after load); reset after successful submit — prefer `reset()` in effect or after mutate, not inside onSubmit
+
+## Conventions
+
+- Zod schema at boundary; type from `z.infer`; show field errors inline; disable submit during submit; server errors via `setError('root.serverError', { message })` or per-field `setError(field, { message })`
+- Multi-step: one form per step or single form with `useFormContext`; persist state as needed
+
+## Controlled vs Uncontrolled
+
+- Prefer React Hook Form (uncontrolled by default) for most forms
+- Controlled: `value` + `onChange` when you need full control (e.g. custom components)
+- Do not mix controlled and uncontrolled for the same field
+
+## API Integration
+
+- On mutation error: map API validation errors to fields with `setError(field, { message })`; use `setError('root', { message })` for generic errors
+- Use `useMutation` (TanStack Query) with `mutateAsync` in onSubmit; handle loading via `isSubmitting` or mutation state
+
+## Best Practices
+
+- RHF + Zod; clear labels; errors near inputs; disable submit when submitting; handle API errors; reset after success; correct input types; ARIA for invalid/describedby
+
+## Anti-Patterns
+
+- Validate on every keystroke (use onBlur or onSubmit); submit button not disabled during submit; generic errors; not mapping API errors to fields; manual state when RHF suffices; no visual validation feedback; uncontrolled + complex validation; missing labels; not sanitizing input
+
+**See also:** `validation.mdc`, `input-sanitization.mdc`, `components.mdc`, `accessibility.mdc`

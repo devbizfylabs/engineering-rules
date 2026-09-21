@@ -1,0 +1,42 @@
+---
+description: "State management - Zustand stores, React 19 hooks, context patterns, derived state"
+---
+
+# State Management
+
+## Decision Tree
+
+- **Single component** → `useState` (or `useReducer` for complex transitions)
+- **2–3 siblings** → Lift state or `useContext`
+- **Server data** → TanStack Query (not Zustand)
+- **Global client state** → Zustand (or context for theme/auth)
+
+## useState / useReducer
+
+- `useState(initial)` or `useState(() => expensiveInit)` for lazy init
+- `useReducer` when next state depends on previous and logic is non-trivial; single reducer, typed actions
+
+## Zustand
+
+- **Store:** `create<T>((set) => ({ field, setField: (v) => set({ field: v }) }))`; use selectors to avoid re-renders: `useStore(s => s.field)`
+- **Slices / no persistence:** Keep stores focused; use `persist` middleware only when needed (e.g. preferences)
+- **Async:** Call `set` after await; do not put async logic in store creation
+
+## Context
+
+- For theme, locale, auth — provide value from top; consume with `useContext` or custom hook
+- Split contexts by concern to avoid unnecessary re-renders; or use Zustand for frequently changing values
+
+## Derived State
+
+- Prefer computing in render (`useMemo` if expensive) over storing derived state; avoid syncing two sources of truth (e.g. props and state) — derive or lift
+
+## Best Practices
+
+- Prefer local state; Zustand for shared client state; TanStack Query for server; minimal context; derive when possible
+
+## Anti-Patterns
+
+- Storing server data in Zustand; oversized context; duplicate state (prop + state); storing derivable values
+
+**See also:** `data-fetching.mdc`, `components.mdc`

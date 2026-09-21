@@ -1,0 +1,34 @@
+---
+description: "Code quality standards - TypeScript strict mode, React 19 idioms, naming conventions, hooks rules"
+---
+
+# Code Quality Standards
+
+## TypeScript
+
+- **Strict:** Enable `strict`, `noUncheckedIndexedAccess`, `noImplicitOverride`, `noFallthroughCasesInSwitch`, `noUnusedLocals`, `noUnusedParameters`
+- **Types:** Explicit props interfaces; avoid `any`; use `string | null` for nullable, `?` for optional
+- **Module:** `moduleResolution: "bundler"`, `skipLibCheck: true`, `jsx: "react-jsx"`
+
+## React
+
+- **Components:** Functional components; explicit props type; no `React.FC` (deprecated)
+- **Hooks:** Only at top level; dependency arrays correct; custom hooks named `use*` and return stable interface where needed
+
+## Naming
+
+- **Components:** PascalCase
+- **Hooks:** useCamelCase
+- **Files:** PascalCase for components (`Button.tsx`); camelCase for utilities/hooks
+- **Constants:** UPPER_SNAKE for true constants
+
+## Conventions
+
+- One component per file (or small related group); barrel exports where helpful; avoid default export for components (prefer named for refactor/IDE)
+- **ESLint:** Use React and TypeScript recommended rules; fix on save
+
+## Anti-Patterns
+
+- `any`; missing key on list items; useEffect with wrong deps; mutating state; missing error/loading handling
+
+**See also:** `../../patterns/clean-code.mdc`, `testing.mdc`

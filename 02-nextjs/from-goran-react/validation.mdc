@@ -1,0 +1,48 @@
+---
+description: "Zod schemas - runtime validation, type inference, error messages, schema composition"
+---
+
+# Validation with Zod
+
+## Basics
+
+- **Schema:** `z.object({ name: z.string(), email: z.string().email(), age: z.number().int().positive() })`
+- **Type:** `type T = z.infer<typeof schema>`
+- **Parse:** `schema.safeParse(data)` → `{ success: true, data } | { success: false, error }`; use `data` only after success check
+
+## Common Types
+
+- **String:** `.min(n)`, `.max(n)`, `.email()`, `.url()`, `.uuid()`, `.regex()`, `.trim()`, custom message as second arg
+- **Number:** `.min()`, `.max()`, `.int()`, `.positive()`, `.multipleOf()`
+- **Optional:** `z.string().optional()` or `z.optional(z.string())`
+- **Nullable:** `z.string().nullable()`
+- **Array:** `z.array(z.string())`, `.min(1)`, `.max(10)`
+- **Object nest:** `z.object({ nested: z.object({ ... }) })`
+- **Discriminated union:** `z.discriminatedUnion('type', [z.object({ type: z.literal('a'), ... })])`
+
+## Error Messages
+
+- Per validator: `z.string({ required_error: 'Required' }).email('Invalid email')`
+- Custom: `.refine(predicate, { message: '...' })`; `.superRefine` for multiple issues
+
+## Composition
+
+- **Merge:** `z.object({ a }).merge(z.object({ b }))` or spread
+- **Pick/omit:** `schema.pick({ a, b })`, `schema.omit({ c })`
+- **Partial:** `schema.partial()` for optional fields
+- **Transform:** `.transform(value => ...)` for parsing (e.g. string → Date)
+
+## Integration
+
+- **React Hook Form:** `resolver: zodResolver(schema)` from `@hookform/resolvers/zod`
+- **API boundaries:** Parse request body/params with `schema.safeParse`; return 400 with error details if invalid
+
+## Best Practices
+
+- Validate at boundaries (form submit, API input); use inferred types; consistent error message style
+
+## Anti-Patterns
+
+- Validating only on client; trusting parsed data without checking `success`; overly permissive schemas
+
+**See also:** `forms.mdc`, `input-sanitization.mdc`

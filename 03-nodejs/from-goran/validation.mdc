@@ -1,0 +1,27 @@
+---
+description: "Request validation - Zod schemas, class-validator, type inference, error formatting"
+---
+
+# Request Validation (Node.js)
+
+## Zod (Recommended)
+
+- **Schema:** Define shape with z.object, z.string(), z.number(), etc.; optional, nullable, refine for custom rules
+- **Type:** `type T = z.infer<typeof schema>`
+- **Parse:** `schema.safeParse(body)`; on success use data; on failure return 400 with flattened errors (path + message)
+- **Where:** Validate body, query, params at controller boundary before calling services
+
+## Class-validator (Alternative)
+
+- Use with DTO classes and decorators (@IsString, @IsEmail, etc.); validate with validate(dto); map errors to 400 response
+
+## Conventions
+
+- Validate all input at boundary; return a consistent RFC 7807 ProblemDetails response with field-level details when needed; do not trust client
+- Use same schema for type and runtime; coerce where safe (e.g. query string to number)
+
+## Anti-Patterns
+
+- Validating only in service; inconsistent error format; no validation for query/params; trusting type without runtime check
+
+**See also:** `controllers.mdc`, `input-sanitization.mdc`, `../../patterns/input-sanitization.mdc`

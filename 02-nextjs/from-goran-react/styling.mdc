@@ -1,0 +1,36 @@
+---
+description: "Tailwind CSS patterns - design tokens, responsive design, dark mode, cn() utility"
+---
+
+# Styling with Tailwind CSS
+
+## Setup
+
+- **Config:** `tailwind.config.ts` — `content: [paths]`, `theme.extend` for colors, fontFamily, spacing, etc.; `darkMode: 'class'` (or `'media'`)
+- **Global CSS:** `@tailwind base; @tailwind components; @tailwind utilities;`; use `@layer base` for CSS variables (e.g. for theming)
+- **cn():** Use `clsx` + `tailwind-merge` (or similar) to merge class names and resolve Tailwind conflicts
+
+## Design Tokens
+
+- Define in `theme.extend`: colors (including semantic: primary, muted, destructive), fontFamily, spacing, borderRadius, boxShadow
+- Reference in classes: `bg-primary`, `text-muted-foreground`, `rounded-lg`
+
+## Responsive
+
+- Breakpoints: `sm:`, `md:`, `lg:`, `xl:`, `2xl:`; mobile-first (base = mobile)
+- Use for layout (`md:grid-cols-2`), visibility (`hidden md:block`), typography
+
+## Dark Mode
+
+- With `darkMode: 'class'`: add `class="dark"` to root (e.g. `<html>`); use `dark:` prefix: `bg-white dark:bg-gray-900`
+- Prefer CSS variables in `@layer base` for theme colors so components use `bg-background`, `text-foreground`
+
+## Conventions
+
+- Prefer Tailwind utilities over custom CSS; extract repeated patterns with `@apply` in `@layer components` sparingly; keep components using utility classes for consistency
+
+## Anti-Patterns
+
+- Inline styles for layout/sizing; arbitrary values everywhere; inconsistent token usage
+
+**See also:** `components.mdc`

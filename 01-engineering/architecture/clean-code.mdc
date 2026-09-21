@@ -1,0 +1,16 @@
+---
+description: "Clean coding principles - readability, naming, guard clauses, cognitive load, method parameters, composition, Law of Demeter (index to sub-rules)"
+---
+
+# Clean Code Principles (Index)
+
+Clean code guidance is split into focused rule files. Request the one that matches your task:
+
+| Topic | File | When to Use |
+|-------|------|-------------|
+| **Naming and intent** | `patterns/clean-code-naming.mdc` | Naming conventions, vocabulary, abbreviations, negated booleans |
+| **Function structure** | `patterns/clean-code-functions.mdc` | Method parameters, guard clauses, abstraction levels, cognitive load |
+| **Design principles** | `patterns/clean-code-design.mdc` | Side effects, immutability, Law of Demeter, composition, dependencies |
+| **Code hygiene** | `patterns/clean-code-hygiene.mdc` | Dead code, magic numbers, comments, fail fast, Rule of Three |
+
+**See also:** `architecture.mdc`, `testing.mdc`

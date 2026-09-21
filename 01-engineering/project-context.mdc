@@ -1,0 +1,37 @@
+---
+description: "Project context for pmctl — Precious Metals Intelligence CLI"
+alwaysApply: true
+---
+
+# Project Context
+
+## Project
+
+| Field | Value |
+|-------|-------|
+| Name | pmctl |
+| Type | monolith |
+
+## Active Stacks (directory → router)
+
+| Directory / path pattern | Router file |
+|--------------------------|-------------|
+| `src/**/*.ts`, `tests/**/*.ts` | `languages/nodejs/nodejs-base.mdc` |
+
+## Key Dependencies
+
+| Area | Key deps |
+|------|----------|
+| Runtime | Node.js 20+ (ESM), TypeScript 5.9 (strict) |
+| CLI | commander 14, chalk 5, cli-table3 |
+| Validation | zod 4 |
+| Storage | better-sqlite3 (SQLite — caching + history) |
+| Logging | pino 10, pino-pretty |
+| Rate limiting | bottleneck |
+| LLM | @google/generative-ai (Gemini Flash) |
+| Analysis | technicalindicators |
+| Testing | vitest 4, tsx (dev runner) |
+
+## Architecture Notes
+
+CLI tool that fetches data from multiple free REST APIs (Alpha Vantage, MetalpriceAPI, FRED, GDELT, NewsAPI), caches responses in SQLite, computes technical indicators and a composite Buy Score for gold/silver, and optionally generates an LLM narrative via Gemini Flash. No web server — single-command execution model.

@@ -1,0 +1,37 @@
+---
+description: "API controller patterns - Express, Fastify, NestJS, Hono routing and HTTP conventions"
+---
+
+# API Controllers (Node.js)
+
+## Responsibilities
+
+- Parse request (params, query, body); validate input (Zod or similar); call service; return status and body; handle errors via middleware or try/catch
+
+## Conventions
+
+- **Routes:** RESTful resources (GET /users, GET /users/:id, POST /users, etc.); use plural nouns; version in URL or header if needed
+- **Status:** 200/201 for success; 204 for no content; 400 validation; 401 unauthenticated; 403 forbidden; 404 not found; 409 conflict; 500 server error
+- **Body:** JSON; use RFC 7807 ProblemDetails for errors; consistent shape (e.g. { data } or { items, total })
+- **Async:** Use async/await; forward errors to error middleware (do not swallow)
+
+## Validation
+
+- Validate at controller boundary (Zod schema, body/query/params); return 400 with details on failure; infer TypeScript type from schema
+
+## Frameworks
+
+- **Express:** Router, req/res, next; middleware for auth, validation
+- **Fastify:** Schema-based validation; plugins
+- **NestJS:** Controllers, DTOs, guards, pipes
+- **Hono:** Lightweight, type-safe routing
+
+## Conventions
+
+- Thin controllers (delegate to services); consistent error handling; correlation ID in logs; no business logic in controller
+
+## Anti-Patterns
+
+- Business logic in controller; no validation; inconsistent status codes; leaking stack traces
+
+**See also:** `validation.mdc`, `error-handling.mdc`, `../../patterns/api-design.mdc`

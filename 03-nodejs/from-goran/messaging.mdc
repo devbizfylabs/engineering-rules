@@ -1,0 +1,29 @@
+---
+description: "Message queues and background jobs - BullMQ, event-driven patterns, job scheduling"
+---
+
+# Messaging & Background Jobs (Node.js)
+
+## BullMQ (Redis)
+
+- **Queue:** Create queue with name and connection; add jobs with data; process with worker (queue.process(handler))
+- **Options:** Delay, priority, repeat (cron), jobId for idempotency; retry with backoff
+- **Events:** completed, failed, stalled; use for logging and metrics
+- **Concurrency:** Set concurrency per worker; use separate queues for different workloads
+
+## Patterns
+
+- **Fire-and-forget:** Add job and return 202; worker processes async
+- **Idempotency:** Use same jobId for same logical work; dedupe in worker if needed
+- **Dead letter:** After max attempts, move to DLQ or log for manual handling
+- **Scheduling:** Use repeat option or separate scheduler that enqueues
+
+## Conventions
+
+- Validate job data in worker; keep jobs small and serializable; use correlation ID in job data for tracing; handle failures and retries
+
+## Anti-Patterns
+
+- Large payloads in job; no retry; no idempotency for side effects; blocking worker on long operations
+
+**See also:** `resilience.mdc`, `error-handling.mdc`, `../../patterns/architecture.mdc`

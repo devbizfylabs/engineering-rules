@@ -1,0 +1,41 @@
+---
+description: "Performance optimization - React.memo, useMemo, useCallback, lazy loading, code splitting, bundle optimization"
+---
+
+# Performance Optimization
+
+## When to Optimize
+
+- Measure first; optimize only when there is evidence of a problem (slow render, large bundle)
+
+## React.memo
+
+- Use for **expensive** components that receive stable props; avoids re-render when parent re-renders with same props
+- **Custom compare:** Second argument to `memo(fn, (prev, next) => true if equal)` when referential equality is wrong (e.g. only `id` matters)
+- **Avoid:** When props are new every render (inline objects/functions); when component is cheap
+
+## useMemo
+
+- Use for **expensive computations** (filtering large lists, heavy derivation); dependency array must be correct
+- **Avoid:** For trivial calculations; when deps change every render
+
+## useCallback
+
+- Use when passing **stable callback** to memoized child; same deps rules as useMemo
+- **Avoid:** When child is not memoized; when callback does not need stability
+
+## Code Splitting
+
+- **Routes:** `const Page = lazy(() => import('./Page'))`; wrap with `<Suspense fallback={...}>`
+- **Heavy components:** Lazy load modals, charts, or below-fold content
+- **Bundle:** Analyze with build tool; split vendor or large libs if needed
+
+## Conventions
+
+- Prefer composition and small components; avoid premature memoization; use React DevTools Profiler to find slow trees
+
+## Anti-Patterns
+
+- memo/useMemo/useCallback everywhere; inline object/function props with memo; splitting every route without need
+
+**See also:** `components.mdc`, `data-fetching.mdc`

@@ -1,0 +1,39 @@
+---
+description: "Security practices - XSS prevention, CSP, secure storage, CORS handling, authentication"
+---
+
+# Security Practices
+
+## Critical Rules
+
+- Never expose secrets, API keys, or credentials in code or source control
+- Always use HTTPS in production; validate and sanitize user input; never trust external data
+
+## XSS Prevention
+
+- React escapes text by default; **avoid `dangerouslySetInnerHTML`** unless necessary
+- If you must render HTML: sanitize with **DOMPurify** — `DOMPurify.sanitize(html, { ALLOWED_TAGS, ALLOWED_ATTR })`; restrict to safe tags/attrs and `ALLOWED_URI_REGEXP: /^https?:\\/\\//i` for links
+- **Links:** Validate `href` protocol (`http:`/`https:` only); use `rel="noopener noreferrer"` for `target="_blank"`
+
+## Secure Storage
+
+- **Tokens:** Prefer memory + HttpOnly cookies for refresh; avoid localStorage for tokens if possible
+- **Sensitive data:** Do not store in localStorage/sessionStorage unless encrypted and necessary; clear on logout
+
+## CSP (Content Security Policy)
+
+- Set CSP headers (e.g. in server or Vite middleware): `default-src 'self'`; restrict `script-src`, `style-src`, `connect-src` to known origins; avoid `'unsafe-inline'` where possible
+
+## CORS and API
+
+- API should allow only needed origins; credentials only when required; frontend uses same-origin or configured API URL
+
+## Best Practices
+
+- Sanitize all user-derived HTML; validate URLs; secure storage for tokens; CSP; no secrets in client bundle
+
+## Anti-Patterns
+
+- `dangerouslySetInnerHTML` with unsanitized input; `javascript:` or unvalidated hrefs; secrets in code or localStorage; missing CSP
+
+**See also:** `input-sanitization.mdc`, `validation.mdc`

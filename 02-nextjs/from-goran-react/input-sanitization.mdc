@@ -1,0 +1,44 @@
+---
+description: "Input sanitization - DOMPurify, form sanitization, URL validation, file upload safety"
+---
+
+# Input Sanitization
+
+All external input is untrusted. Sanitize at system boundaries.
+
+## Validation vs Sanitization
+
+- **Validation:** Reject invalid input (e.g. email format)
+- **Sanitization:** Transform to safe form (strip/escape HTML, restrict URLs)
+- Use both where applicable.
+
+## HTML (DOMPurify)
+
+- **When:** Any user-supplied HTML rendered with `dangerouslySetInnerHTML`
+- **How:** `DOMPurify.sanitize(html, { ALLOWED_TAGS, ALLOWED_ATTR, ALLOW_DATA_ATTR: false, ALLOWED_URI_REGEXP: /^https?:\\/\\//i })`
+- Restrict tags/attrs to minimum needed; never allow `script`, event handlers, or `javascript:` URLs
+- **Strip all:** `ALLOWED_TAGS: []`, `ALLOWED_ATTR: []` for plain text
+
+## URLs
+
+- **Links:** Only allow `http:` and `https:`; parse with `new URL(url)` and check `protocol`; use `rel="noopener noreferrer"` for `target="_blank"`
+- Reject `javascript:`, `data:` (if not required), and invalid URLs
+
+## File Uploads
+
+- Validate **type** (allowlist MIME/ext); validate **size** (max); store outside web root or in object storage with generated names; never execute or serve as script
+- Do not trust client-supplied file names for storage; sanitize for display (path traversal, special chars)
+
+## Forms
+
+- Validate with Zod (or similar) for shape and format; sanitize rich text with DOMPurify before save/display; encode for output where needed (e.g. in attributes)
+
+## Best Practices
+
+- Allowlist over blocklist; sanitize once at boundary; keep sanitization config strict
+
+## Anti-Patterns
+
+- Trusting client input; rendering unsanitized HTML; allowing `javascript:` or broad `data:`; trusting file names or types from client
+
+**See also:** `security.mdc`, `validation.mdc`, `../../patterns/input-sanitization.mdc`

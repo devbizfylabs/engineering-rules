@@ -1,0 +1,38 @@
+---
+description: "TanStack Query patterns - cache management, optimistic updates, prefetching, mutations"
+---
+
+# Data Fetching with TanStack Query
+
+## Setup
+
+- Wrap app with `QueryClientProvider`; create `QueryClient` with `defaultOptions` (staleTime, gcTime, retry, refetchOnWindowFocus as needed)
+
+## Queries
+
+- **useQuery:** `queryKey: ['resource', id]` (or `['users', 'search', params]`); `queryFn: async () => fetch/return`; `enabled: boolean` for conditional fetch
+- **States:** `isLoading`, `isError`, `error`, `data`, `isFetching`, `refetch`
+- **Query key:** Include all dependencies (filters, pagination) so cache is correct; use consistent key shape across app
+
+## Mutations
+
+- **useMutation:** `mutationFn: async (variables) => api.post(...)`; `onSuccess`, `onError`, `onSettled`; `mutate` or `mutateAsync`
+- **Invalidation:** `queryClient.invalidateQueries({ queryKey: ['users'] })` after create/update/delete
+- **Optimistic updates:** `onMutate` → set cache with `queryClient.setQueryData`; `onError` → rollback with `queryClient.setQueryData(previous)`; `onSettled` → invalidate
+
+## Conventions
+
+- Server state in TanStack Query; local/UI state in useState/Zustand
+- Loading: use `isLoading` for initial, `isFetching` for background refetch
+- Error: render error UI from `error`; use error boundary for unexpected
+- Prefetch: `queryClient.prefetchQuery({ queryKey, queryFn })` on hover or route loader
+
+## Best Practices
+
+- Sensible staleTime/gcTime; retry with backoff; keys include all variables; invalidate after mutations; optimistic updates where UX benefits; prefetch on intent
+
+## Anti-Patterns
+
+- Fetch in useEffect for server data (use loader or useQuery); duplicate query keys; not invalidating after mutation; ignoring loading/error states; storing server state in Zustand
+
+**See also:** `routing.mdc`, `state-management.mdc`, `error-handling.mdc`

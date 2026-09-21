@@ -1,0 +1,34 @@
+---
+description: "Error handling patterns - Result pattern, async/await, error middleware, ProblemDetail (RFC 7807)"
+---
+
+# Error Handling (Node.js)
+
+Concepts: see `../../patterns/error-handling.mdc`. Below: API and middleware.
+
+## Result Pattern
+
+- **Type:** `Result<T, E> = { success: true; value: T } | { success: false; error: E }`; use for expected failures (validation, not found)
+- **Service layer:** Return Result from services; controller checks and maps to HTTP or throws
+- **Errors:** Use AppError with code, message, statusCode; optional details for validation errors
+
+## API Errors
+
+- **RFC 7807 ProblemDetails:** type, title, status, detail, instance, extensions; set Content-Type application/problem+json
+- **Status:** Map domain errors to 400, 404, 409, etc.; 500 for unexpected; do not leak stack in production
+- **Middleware:** Global error handler catches thrown errors and async rejections; map to status and body; log with correlation ID
+
+## Async
+
+- Use async/await; do not leave promises unhandled; forward errors to error middleware (next(err) or throw)
+- In Express: wrap async route handlers so rejections are passed to next
+
+## Conventions
+
+- Result for expected failures; throw for programming errors; single global error handler; consistent response shape; log errors with context
+
+## Anti-Patterns
+
+- Swallowing errors; returning 200 on error; no global handler; exposing stack traces in prod
+
+**See also:** `controllers.mdc`, `../../patterns/error-handling.mdc`

@@ -1,0 +1,53 @@
+---
+description: "React Router v7 patterns - loaders, actions, nested routes, route guards"
+---
+
+# Routing with React Router v7
+
+## Setup
+
+- `createBrowserRouter([...])` + `RouterProvider router={router}`; per-route `element`, `errorElement`, `loader`, `action`
+- Children: `index: true` for index route; `path: 'segment'` for nested routes; layout wraps with `<Outlet />`
+
+## Loaders
+
+- **Signature:** `async function loader({ params, request }: LoaderFunctionArgs): Promise<Data>`
+- **Params:** Validate `params.id`; throw `new Response('message', { status: 404 })` or `redirect('/path')` on auth failure
+- **Search params:** `new URL(request.url).searchParams.get('q')`
+- **Usage:** `useLoaderData<Data>()` in component
+
+## Actions
+
+- **Signature:** `async function action({ params, request }: ActionFunctionArgs)`
+- **Form data:** `await request.formData()`; `formData.get('name')`
+- Return `redirect('/path')` on success; return `{ errors }` for validation; throw or return error for 4xx/5xx
+- **Usage:** `<Form method="post">`; `useActionData<typeof action>()`; `useNavigation().state === 'submitting'` for loading
+
+## Navigation
+
+- **Declarative:** `<Link to="/path">`, `<NavLink to="..." className={({ isActive }) => ...}>`; `<Link to=".." relative="path">`; `replace`
+- **Programmatic:** `useNavigate()` — `navigate(path)`, `navigate(-1)`, `navigate(path, { replace: true, state })`
+- **Search params:** `useSearchParams()`; update with `setSearchParams(prev => new URLSearchParams(...))`
+
+## Route Guards
+
+- **Loader-based:** In loader, check auth; if unauthenticated `throw redirect('/login?redirectTo=' + pathname)`; if forbidden throw `new Response(..., { status: 403 })`
+- **Component-based:** `<RequireAuth><Outlet /></RequireAuth>` — inside, check auth and render `<Navigate to="/login" state={{ from: location }} replace />` if not authenticated
+
+## Key Hooks
+
+- `useLoaderData<T>()`, `useActionData<T>()`, `useNavigation()` (state: idle|submitting|loading), `useFetcher()` (background submit without navigation), `useSearchParams()`, `useLocation()`, `useParams()`
+
+## Error Handling
+
+- Route-level `errorElement`; in it use `useRouteError()` and `isRouteErrorResponse(error)` for thrown Response (status, data)
+
+## Best Practices
+
+- Data in loaders (not useEffect); throw Response/redirect from loaders; actions for mutations; `useNavigation` for loading; `useFetcher` for background ops; validate params in loaders; type-safe route data; lazy load heavy route components; shareable state in URL (filters, pagination)
+
+## Anti-Patterns
+
+- Fetch in useEffect instead of loader; no loader/action error handling; route state in Zustand instead of URL; not using Form for mutations; no loading states; hardcoded route strings; unvalidated params
+
+**See also:** `data-fetching.mdc`, `forms.mdc`, `error-handling.mdc`, `state-management.mdc`

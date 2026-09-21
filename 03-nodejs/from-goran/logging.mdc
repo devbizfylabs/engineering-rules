@@ -1,0 +1,31 @@
+---
+description: "Structured logging - Pino, Winston, correlation IDs, log levels, HTTP request logging"
+---
+
+# Logging (Node.js)
+
+## Structured Logs
+
+- **Format:** JSON; include timestamp, level, message, and context (requestId, userId, etc.)
+- **Levels:** error, warn, info, debug; set level via env (LOG_LEVEL); do not log secrets or PII at info
+- **Libraries:** Pino (fast), Winston (flexible)
+
+## Correlation ID
+
+- Generate or extract from request (header X-Correlation-ID); attach to logger (child logger or context); include in every log line for the request; propagate to downstream HTTP calls
+
+## HTTP Logging
+
+- Log request (method, path, correlationId); log response (status, duration); use middleware; exclude sensitive headers/body
+- Log at end of request with duration; log errors with stack in development only
+
+## Conventions
+
+- One correlation ID per request; structured fields; no secrets; appropriate level (debug in dev, info in prod for key events)
+- Use child loggers with bound context (requestId, userId) for request-scoped logs
+
+## Anti-Patterns
+
+- Logging full request/response with secrets; no correlation ID; unstructured strings; wrong level (error for expected 4xx)
+
+**See also:** `error-handling.mdc`, `controllers.mdc`

@@ -1,0 +1,39 @@
+---
+description: "Input sanitization - XSS prevention, SQL injection, path traversal, content validation"
+---
+
+# Input Sanitization (Node.js)
+
+Concepts: see `../../patterns/input-sanitization.mdc`. Below: API-specific.
+
+## Validation vs Sanitization
+
+- **Validation:** Reject invalid input (format, range)
+- **Sanitization:** Transform to safe form (escape, strip tags, normalize path)
+- Use both at API boundary
+
+## SQL Injection
+
+- Use parameterized queries only (ORM or prepared statements); never concatenate user input into SQL
+- Prisma/Drizzle/TypeORM use parameters by default; avoid raw query with string interpolation
+
+## XSS
+
+- For APIs returning data to browser: frontend must escape; if API returns HTML, sanitize with DOMPurify or allowlist on server before storing
+- Validate Content-Type and size for file uploads; store with safe names
+
+## Path Traversal
+
+- Validate file paths; do not use user input directly in fs.readFile(path); resolve to canonical path and check it is under allowed root
+- For URLs: validate protocol (http/https); allowlist domains if building URLs from input
+
+## Conventions
+
+- Validate at boundary (Zod + refinements); sanitize before persist or output; use allowlist over blocklist
+- Log validation failures without logging full input (could be sensitive)
+
+## Anti-Patterns
+
+- Raw SQL with input; trusting client path or URL; no max length/size; storing unsanitized HTML
+
+**See also:** `validation.mdc`, `security.mdc`, `../../patterns/input-sanitization.mdc`

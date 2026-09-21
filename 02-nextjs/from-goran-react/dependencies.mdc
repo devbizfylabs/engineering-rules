@@ -1,0 +1,30 @@
+---
+description: "pnpm workspace, package selection criteria, security scanning, license verification"
+---
+
+# Dependencies & Package Management
+
+## pnpm
+
+- Use **pnpm**; set `packageManager` in package.json; use `engine-strict=true` and `save-exact=true` in `.npmrc`
+- **Workspace:** `pnpm-workspace.yaml` with `packages: ['apps/*', 'packages/*']` (or equivalent)
+
+## Package Selection
+
+- **Licenses:** Only MIT, Apache-2.0, BSD-2, BSD-3, ISC or OSI-approved free; no commercial/paid for production; be cautious with GPL/AGPL
+- **Before adding:** Check license, last publish/commit, security (no known vulns), bundle size, TypeScript types, docs, maintenance
+
+## Security
+
+- Run `pnpm audit`; fix or accept risk for moderate+; use `pnpm audit --audit-level high` in CI
+- Keep dependencies updated; review release notes for breaking changes
+
+## Conventions
+
+- Prefer minimal dependencies; avoid duplicate packages (e.g. one HTTP client, one date lib); lockfile committed
+
+## Anti-Patterns
+
+- Adding paid or unclear-license packages without asking; ignoring audit; committing without lockfile
+
+**See also:** `code-quality.mdc`, `../../patterns/security.mdc`

@@ -1,0 +1,41 @@
+---
+description: "Component design patterns - composition, prop patterns, compound components, render props"
+---
+
+# Component Design Patterns
+
+## Structure
+
+- Functional components; extend native props where appropriate (`React.ButtonHTMLAttributes<HTMLButtonElement>`); spread `...props` onto DOM element; use `cn()` or similar for class merging
+- Variants: use discriminated props (e.g. `variant: 'primary' | 'secondary'`) and map to styles; avoid boolean prop proliferation
+
+## Composition Over Configuration
+
+- Prefer **composition:** `<Card><CardHeader>...</CardHeader><CardContent>...</CardContent></Card>` over `<Card title="..." content="..." />`
+- Small, focused subcomponents (CardHeader, CardContent, CardFooter) give flexibility and clarity
+
+## Compound Components
+
+- Parent holds state (e.g. active tab); provide via **Context**; child components consume with `useContext` or custom hook; throw if used outside provider
+- Example: `Tabs` (state) + `TabsList` + `Tab` + `TabPanel`; share `activeTab` / `setActiveTab` via context
+
+## Render Props / Slots
+
+- When composition needs access to internal state: `children(value)` or `render(value)`; or use **slot props:** `header`, `footer` as render functions
+
+## Props Conventions
+
+- **Children:** `React.ReactNode` for flexible content
+- **Optional with defaults:** `variant = 'primary'`
+- **Forwarding refs:** `forwardRef` when wrapping native elements (input, button) for focus or form libraries
+- **Avoid:** Boolean props that could be variants (e.g. `isPrimary` → `variant="primary"`)
+
+## Best Practices
+
+- Single responsibility; composition; consistent prop naming; accessibility (see `accessibility.mdc`)
+
+## Anti-Patterns
+
+- Monolithic components with many optional props; prop drilling (use context or composition); missing ref forwarding for form/accessibility
+
+**See also:** `forms.mdc`, `accessibility.mdc`, `styling.mdc`

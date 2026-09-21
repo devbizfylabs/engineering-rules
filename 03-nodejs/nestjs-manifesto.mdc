@@ -1,0 +1,178 @@
+---
+description: 2muchcoffee NestJS engineering standards. Apply when writing, refactoring, or reviewing NestJS code in this repository.
+globs:
+  - "src/**/*.ts"
+  - "test/**/*.ts"
+  - "**/*.controller.ts"
+  - "**/*.service.ts"
+  - "**/*.module.ts"
+  - "**/*.dto.ts"
+  - "**/*.entity.ts"
+  - "**/*.spec.ts"
+  - "**/*.e2e-spec.ts"
+alwaysApply: true
+---
+
+# 2muchcoffee NestJS standards
+
+Apply these rules to every NestJS change in this repo. Order: architecture, structure, code-level.
+
+## Architecture
+
+- Modularize by feature, not by layer. Every domain is a module under `src/modules/<feature>/`.
+- Use dependency injection. Never `new` up a service or repository inside another service.
+- Follow NestJS defaults unless you can justify deviation.
+- `tsconfig.json` must have `"strict": true`. Refuse to write `any`.
+- Prefer decorators over imperative plumbing.
+
+## Project structure
+
+When you generate or move files, follow this shape:
+
+```
+src/
+├── modules/
+│   ├── <feature>/
+│   │   ├── <feature>.controller.ts
+│   │   ├── <feature>.service.ts
+│   │   ├── dto/
+│   │   ├── entities/
+│   │   └── <feature>.module.ts
+│   └── shared/
+│       ├── decorators/
+│       ├── validators/
+│       ├── middlewares/
+│       ├── classes/
+│       └── shared.module.ts
+├── app.module.ts
+└── main.ts
+```
+
+`SharedModule` is the only cross-module export point. Do not import internals from one feature module into another.
+
+## Controllers
+
+- Keep them thin. Delegate to services.
+- Use REST verb decorators correctly: `@Post` create, `@Get` read, `@Put` replace, `@Patch` partial update, `@Delete` remove.
+- Use explicit `@HttpCode` when the response is not 200.
+
+```typescript
+@Controller('users')
+export class UserController {
+  constructor(private readonly userService: UserService) {}
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  create(@Body() dto: CreateUserDto) {
+    return this.userService.create(dto);
+  }
+}
+```
+
+## DTOs and validation
+
+- Every controller input goes through a DTO with `class-validator` decorators.
+- Apply the global `ValidationPipe` in `main.ts` with `whitelist: true` and `forbidNonWhitelisted: true`.
+- Use enums, never magic strings.
+
+```typescript
+export class CreateUserDto {
+  @IsString()
+  @Length(2, 100)
+  name: string;
+
+  @IsEmail()
+  email: string;
+}
+```
+
+## Services
+
+- Business logic lives here.
+- Constructor-inject everything.
+- Use `async`/`await`. Do not chain `.then()`.
+- Public methods are single-responsibility with clear names.
+
+## Imports
+
+Order: NestJS modules, then third-party packages, then local imports. Separate the three groups with a blank line.
+
+## Error handling
+
+- Throw `HttpException` subclasses for known errors (`BadRequestException`, `NotFoundException`, `ConflictException`).
+- Never throw plain `Error` from a controller or service.
+- Register a global exception filter for response shape consistency.
+- Never expose stack traces or internal error details to clients in production.
+
+```typescript
+@Catch(HttpException)
+export class GlobalExceptionFilter implements ExceptionFilter {
+  catch(exception: HttpException, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    response.status(exception.getStatus()).json({
+      statusCode: exception.getStatus(),
+      message: exception.message,
+    });
+  }
+}
+```
+
+## Common HTTP status codes
+
+200 OK, 201 Created, 204 No Content, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 409 Conflict, 422 Unprocessable Entity, 500 Internal Server Error.
+
+## Security
+
+- Always validate input.
+- Apply auth guards globally where possible.
+- Use Helmet, an explicit CORS allowlist, and rate limiting on every public endpoint.
+- Never read, stage, or commit `.env`, `.env.local`, `.env.*`, or any file containing real-looking secrets. If you see one in the working set, stop and ask before continuing.
+- Generate environment files from `.env.example` per environment.
+
+## Authentication and authorization
+
+- Stateless token auth.
+- Separation of authentication and authorization.
+- Access Token short-lived. Refresh Token long-lived and rotated.
+- Centralize the auth check.
+
+## Performance and scalability
+
+- Paginate every list endpoint. Default `limit` 20, max `limit` 100.
+- Cache reads where the data tolerates it.
+- Avoid N+1 queries.
+- Enable compression in `main.ts`.
+
+## Testing
+
+- Use Jest. Mock dependencies with `@nestjs/testing`.
+- Every public service method gets at least one unit test.
+- Every API endpoint gets at least one e2e test covering one happy path and one error path.
+- If you skip required tests, say so explicitly in your response.
+
+```typescript
+describe('UserService', () => {
+  let service: UserService;
+
+  beforeEach(async () => {
+    const module = await Test.createTestingModule({
+      providers: [UserService],
+    }).compile();
+
+    service = module.get<UserService>(UserService);
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+});
+```
+
+## Hard refusals
+
+- Do not write `any`.
+- Do not commit `.env` files or any file containing real secrets.
+- Do not disable validation pipes globally without a replacement guard.
+- Do not bypass module boundaries by importing internals from another feature module.
+- Do not add a service-level method without at least one unit test, unless the human has explicitly accepted the trade-off in the same turn.

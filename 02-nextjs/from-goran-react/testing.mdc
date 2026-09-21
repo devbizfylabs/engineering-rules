@@ -1,0 +1,50 @@
+---
+description: "Testing strategy - TDD workflow, Vitest, React Testing Library, AAA pattern, mocking"
+---
+
+# Testing Strategy
+
+## TDD Workflow
+
+1. **RED** — Write a failing test first
+2. **GREEN** — Minimal code to pass
+3. **REFACTOR** — Clean up, tests stay green
+
+No implementation without tests first (escape: trivial/config-only changes).
+
+## Structure (AAA)
+
+- **Arrange:** Render component, set up mocks and props
+- **Act:** User actions via `userEvent` (click, type, etc.)
+- **Assert:** `expect(screen.getByRole(...)).toBeInTheDocument()`, `toHaveBeenCalledWith`, etc.
+
+Use **Vitest** (`describe`, `it`, `expect`, `vi.fn()`, `vi.mock`) and **React Testing Library** (`render`, `screen`, `userEvent`).
+
+## Queries (prefer in order)
+
+- `getByRole`, `getByLabelText`, `getByPlaceholderText`, `getByText` — avoid `getByTestId` unless necessary
+- Async: `findBy*` or `waitFor(() => expect(...))`
+
+## Naming
+
+- `should {expected} when {condition}` — e.g. "should display user name when loaded", "should call onEdit when edit button is clicked"
+
+## Mocking
+
+- **Modules:** `vi.mock('modulePath', () => ({ ... }))`
+- **Handlers:** `vi.fn()` for callbacks; assert `toHaveBeenCalledWith`
+- **Fetch/API:** MSW (recommended) or `vi.mock` on API module
+
+## Config (Vitest)
+
+- `environment: 'jsdom'`; `globals: true` or explicit imports; `setupFiles` for global setup (e.g. RTL, cleanup)
+
+## Best Practices
+
+- Test behavior and UX, not implementation; use accessible queries; avoid testing internal state; keep tests focused
+
+## Anti-Patterns
+
+- Testing implementation details; snapshot everything; missing act() for updates; flaky async tests
+
+**See also:** `../../patterns/testing.mdc`, `development/tdd-workflow.mdc`

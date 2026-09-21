@@ -1,0 +1,45 @@
+# Agent instructions
+
+> Copy this file to the **repo root** as `AGENTS.md` and fill in the brackets.
+> For Next.js 16.2+, also follow the bundled docs under `node_modules/next/dist/docs/`
+> (see Vercel’s AI agents guide).
+
+## Project
+
+- Name: [project]
+- Stack: [Next.js App Router / Node Express or Nest] + [PostgreSQL] + [Flutter mobile if any]
+- Package manager: [pnpm | npm | bun] — do not change lockfile tooling
+- Import alias: [@/]
+
+## Architecture
+
+- Prefer Server Components in Next.js. Add `"use client"` only on the smallest interactive leaf.
+- Keep secrets, DB clients, and auth checks on the server only.
+- Validate all inputs at server boundaries (Zod / DTO). Never trust client identity, roles, or prices.
+- Match existing patterns before inventing new ones.
+
+## Commands
+
+- Install: `[...]`
+- Dev: `[...]`
+- Lint: `[...]`
+- Typecheck: `[...]`
+- Test: `[...]`
+- Build: `[...]`
+
+## Working rules
+
+- Follow Karpathy guidelines: think first, keep it simple, surgical diffs, verify with checks.
+- Do not expand scope. No drive-by refactors or unrelated formatting.
+- Do not add dependencies unless required for the task.
+- After edits, run the narrowest relevant check; before handoff run lint + typecheck + affected tests.
+
+## Security
+
+- Never commit or print secrets.
+- No `NEXT_PUBLIC_*` for private keys.
+- Authorize on the server for every mutation.
+
+## Never do
+
+- [project-specific bans]

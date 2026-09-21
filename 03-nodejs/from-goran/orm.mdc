@@ -1,0 +1,34 @@
+---
+description: "Database access patterns - Prisma, Drizzle, TypeORM, migrations, transactions"
+---
+
+# Database Access & ORM
+
+## Choice
+
+- **Prisma:** Strong typing, migrations, good DX; recommended for most projects
+- **Drizzle:** SQL-like, lightweight, performant
+- **TypeORM:** Decorators, common in NestJS
+
+## Prisma
+
+- **Schema:** Define models, relations, indexes; `prisma generate`; migrations with `prisma migrate`
+- **Client:** Singleton (e.g. global in dev to avoid many instances); connect at startup
+- **Queries:** Use include/select to avoid N+1; paginate with take/skip or cursor
+- **Transactions:** `prisma.$transaction([...])` for multiple writes; interactive `$transaction(async (tx) => ...)` when needed
+- **Errors:** Handle unique constraint, not found; map to domain or HTTP errors
+
+## Migrations
+
+- Version migrations; never edit applied migrations; test on copy of prod data
+- Prisma: `migrate deploy` in CI; Drizzle: run migration script
+
+## Conventions
+
+- One client per app; use transactions for multi-step writes; validate input before write; use parameterized queries (ORM does this)
+
+## Anti-Patterns
+
+- N+1 queries; raw SQL with concatenated input; no migrations; multiple client instances
+
+**See also:** `validation.mdc`, `error-handling.mdc`, `../../patterns/architecture.mdc`

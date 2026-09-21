@@ -1,0 +1,37 @@
+---
+description: "Authentication and authorization - JWT, sessions, Passport, role-based access control"
+---
+
+# Authentication & Authorization
+
+## JWT
+
+- **Access token:** Short-lived (15–60 min); in Authorization header or memory; verify with secret, issuer, audience
+- **Refresh token:** Long-lived (7–30 days); HttpOnly cookie; use to issue new access token; rotate on use
+- **Payload:** Include `sub` (user id), roles, and minimal claims; do not store secrets in payload
+- **Verify:** Use library (e.g. jsonwebtoken); handle TokenExpiredError and JsonWebTokenError; return 401 with clear message
+
+## Sessions (Alternative)
+
+- Server-side session store (Redis, DB); session ID in cookie (HttpOnly, Secure, SameSite); validate session on each request
+- Use for stateful auth when JWT is not preferred
+
+## Middleware
+
+- Extract token from header or cookie; verify; attach user/roles to request; next() or 401
+- **Passport:** Use strategies (JWT, local, OAuth); protect routes with authenticate middleware
+
+## Authorization (RBAC)
+
+- After authentication, check role/permission for route or resource; fail with 403 if forbidden
+- Prefer resource-level checks (e.g. "can edit this post") over role-only where needed
+
+## Conventions
+
+- Secrets in env; never log tokens; HTTPS only; short-lived access tokens; validate on every protected request
+
+## Anti-Patterns
+
+- Storing sensitive data in JWT; no expiry; missing audience/issuer; role check without auth
+
+**See also:** `security.mdc`, `../../patterns/security.mdc`

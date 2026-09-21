@@ -1,0 +1,41 @@
+---
+description: "Security best practices - Helmet, CORS, rate limiting, CSRF, OWASP guidelines"
+---
+
+# Security (Node.js API)
+
+## Helmet
+
+- Use Helmet middleware for secure headers (X-Content-Type-Options, X-Frame-Options, etc.); configure CSP if needed
+
+## CORS
+
+- Restrict origin to known frontends; allow only needed methods and headers; credentials only when required
+- Do not use `*` with credentials
+
+## Rate Limiting
+
+- Apply rate limit (e.g. express-rate-limit) per IP or per user; different limits for auth vs API; return 429 with Retry-After when appropriate
+
+## CSRF
+
+- For cookie-based sessions, use CSRF tokens on state-changing requests; SameSite cookie attribute; validate token on POST/PUT/DELETE
+
+## Input & Output
+
+- Validate and sanitize input at boundaries; use parameterized queries (ORM); escape output for HTML if rendering; see input-sanitization.mdc
+- Never log secrets or full tokens
+
+## Secrets
+
+- Env vars or secret manager; never in code; rotate regularly; use different secrets per environment
+
+## Conventions
+
+- HTTPS only in prod; secure headers; least privilege; validate and sanitize input; no secrets in logs
+
+## Anti-Patterns
+
+- Permissive CORS; no rate limiting; trusting client input; secrets in repo
+
+**See also:** `input-sanitization.mdc`, `auth.mdc`, `../../patterns/security.mdc`

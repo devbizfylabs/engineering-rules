@@ -1,0 +1,35 @@
+---
+description: "Resilience patterns - retry, circuit breaker, timeout, bulkhead, rate limiting"
+---
+
+# Resilience (Node.js)
+
+## Retry
+
+- **When:** Transient failures (network, 5xx, 429); not for 4xx (except 429 with backoff)
+- **Backoff:** Exponential (e.g. 2^attempt * base); jitter; max attempts and max delay
+- **Libraries:** Cockatiel, p-retry, or custom wrapper around promise
+
+## Circuit Breaker
+
+- **States:** Closed (normal); Open (fail fast); Half-Open (probe)
+- **Trip:** After N failures in window, open circuit; after timeout, try one request (half-open); close if success
+- Use for external services to avoid cascading failure
+
+## Timeout
+
+- Set timeout on outbound HTTP and DB calls; propagate timeout (e.g. request-scoped AbortSignal); return 504 or equivalent when upstream times out
+
+## Bulkhead
+
+- Limit concurrency (e.g. max 10 concurrent calls to service X) to isolate failure; use queue or semaphore
+
+## Conventions
+
+- Retry with backoff for transients; circuit breaker for external deps; timeouts on all I/O; log failures and state changes
+
+## Anti-Patterns
+
+- Retrying 4xx; no timeout; no circuit breaker for flaky services; unbounded concurrency
+
+**See also:** `http-clients.mdc`, `error-handling.mdc`

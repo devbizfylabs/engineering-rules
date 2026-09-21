@@ -1,0 +1,42 @@
+---
+description: "Testing strategy - TDD workflow, Vitest, Supertest, Testcontainers, mocking patterns"
+---
+
+# Testing (Node.js)
+
+## TDD
+
+- Red/Green/Refactor; write failing test first; minimal code to pass; refactor with tests green
+
+## Unit Tests (Vitest)
+
+- **Setup:** Vitest with Node environment; path aliases; setupFiles for global mocks and env
+- **Structure:** Describe/it; Arrange-Act-Assert; mock external deps (vi.mock)
+- **Naming:** should {expected} when {condition}
+- **Coverage:** Exclude node_modules, types, test files; aim for critical paths
+
+## API Tests (Supertest)
+
+- Request app (Express/Fastify) with supertest; assert status, body, headers; use factories for test data
+- Test auth (valid/invalid token), validation (400), not found (404), success (200/201)
+
+## Integration (Testcontainers)
+
+- Spin up Postgres, Redis, etc. in containers; run migrations; run tests against real DB; tear down
+- Use for repository and integration tests; keep fast with single container or shared setup
+
+## Mocking
+
+- **HTTP:** Mock fetch or axios; or use MSW
+- **DB:** Use test DB (Testcontainers) or in-memory when appropriate
+- **Time:** vi.useFakeTimers for time-sensitive tests
+
+## Conventions
+
+- Fast unit tests; integration tests for boundaries; no production secrets; deterministic tests
+
+## Anti-Patterns
+
+- Testing implementation details; flaky tests; no cleanup; real external calls in unit tests
+
+**See also:** `controllers.mdc`, `validation.mdc`, `../../patterns/testing.mdc`

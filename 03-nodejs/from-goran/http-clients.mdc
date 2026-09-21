@@ -1,0 +1,33 @@
+---
+description: "HTTP clients - native fetch, axios, undici, type-safe requests, error handling"
+---
+
+# HTTP Clients (Node.js)
+
+## Options
+
+- **Native fetch:** Built-in in Node 18+; use for simple requests
+- **Undici:** Fast, low-level; use for high throughput or when fetch is insufficient
+- **Axios:** Interceptors, request/response transform; good for APIs with consistent error shape
+
+## Conventions
+
+- **Base URL:** From env; never hardcode
+- **Timeouts:** Set request timeout; handle ECONNABORTED
+- **Errors:** Map HTTP status to domain errors; retry only on 5xx or network errors with backoff (see resilience.mdc)
+- **Types:** Type response body (e.g. generic on client method); validate with Zod if API is untrusted
+- **Headers:** Set Accept, Content-Type; add auth (Bearer, API key) per service
+
+## Retries
+
+- Use resilience pattern (retry with backoff, circuit breaker) for external calls; do not retry 4xx (except 429 with backoff)
+
+## Conventions
+
+- Single client instance per target (reuse connection); timeout and retry; type and validate responses; log errors with context (no secrets)
+
+## Anti-Patterns
+
+- No timeout; retrying 4xx; logging full response bodies; creating new client per request
+
+**See also:** `resilience.mdc`, `error-handling.mdc`

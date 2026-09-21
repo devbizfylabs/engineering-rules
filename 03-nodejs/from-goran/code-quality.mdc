@@ -1,0 +1,40 @@
+---
+description: "TypeScript and Node.js code quality - ESLint, Prettier, naming conventions, file organization"
+---
+
+# Code Quality (Node.js)
+
+## TypeScript
+
+- **Strict:** strict, noUncheckedIndexedAccess, noImplicitReturns, noFallthroughCasesInSwitch
+- **Config:** module NodeNext; path aliases (@/*); exclude test and build output from root tsconfig
+- **Types:** Explicit function return types for public APIs; avoid any; use unknown and narrow
+
+## Naming
+
+- **Files:** kebab-case or PascalCase for components; consistent per project
+- **Variables/functions:** camelCase; constants UPPER_SNAKE when true constants
+- **Interfaces/types:** PascalCase; I-prefix optional (e.g. User or IUser)
+
+## Structure
+
+- **Layers:** Controllers → services → repositories (or domain); shared (clients, errors, utils); test (setup, factories)
+- **Single responsibility:** One main export per file; small modules
+- **Imports:** Prefer path aliases; group (external, internal, types); no circular deps
+
+## Tooling
+
+- **ESLint:** TypeScript and recommended rules; fix on save
+- **Prettier:** Consistent formatting; run with ESLint without conflict (eslint-config-prettier)
+- **Pre-commit:** Lint and format; optional type-check
+
+## Conventions
+
+- Strict TypeScript; consistent naming; layered structure; no dead code; fail fast on invalid config
+- See patterns/clean-code.mdc for general principles
+
+## Anti-Patterns
+
+- any; unchecked indexed access; large files; circular dependencies; inconsistent naming
+
+**See also:** `../../patterns/clean-code.mdc`, `testing.mdc`
